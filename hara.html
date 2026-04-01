@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hara Store | Full Version</title>
+    <style>
+
+/* لێرەوە ستایلی کۆدەکە زیاد کراوە */
+#access-screen {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: #050505; z-index: 20000; display: flex; justify-content: center; align-items: center;
+}
+.login-card {
+    background: rgba(0, 0, 0, 0.9); padding: 35px 25px;
+    border: 1px solid var(--main-color); border-radius: 20px;
+    text-align: center; width: 280px; box-shadow: 0 0 25px rgba(0, 255, 65, 0.2);
+}
+.login-card input {
+    width: 85%; padding: 12px; background: #111; border: 1px solid #333;
+    color: var(--main-color); text-align: center; border-radius: 8px;
+    outline: none; font-weight: bold; margin-bottom: 15px; margin-top: 15px;
+}
+.login-card button {
+    width: 95%; background: var(--main-color); color: #000;
+    border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer;
+}
+#err-txt { color: #ff3131; font-size: 13px; margin-top: 15px; display: none; font-weight: bold; }
+
+@keyframes shake-box {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(8px); }
+    75% { transform: translateX(-8px); }
+}
+/* کۆتایی ستایلی کۆدەکە */
+
+/* ١. ئەنیمەیشنی لەرینەوە بۆ ناوی ئەپەکان */
+.app-name:hover {
+    animation: glitch 0.3s cubic-bezier(.25, .46, .45, .94) both infinite;
+    color: #fff;
+    text-shadow: 2px 0 var(--main-color), -2px 0 #ff00c1; /* تیشکی دوو ڕەنگی */
+}
+
+@keyframes glitch {
+    0% { transform: translate(0); }
+    20% { transform: translate(-2px, 2px); }
+    40% { transform: translate(-2px, -2px); }
+    60% { transform: translate(2px, 2px); }
+    80% { transform: translate(2px, -2px); }
+    100% { transform: translate(0); }
+}
+
+/* ٢. لایتی جوڵاو لەسەر لێواری ئەپەکان */
+.app-row::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 2px;
+    height: 100%;
+    background: var(--main-color);
+    box-shadow: 0 0 15px var(--main-color);
+    animation: move-light 3s ease-in-out infinite;
+}
+
+@keyframes move-light {
+    0% { top: -100%; }
+    100% { top: 100%; }
+}
+
+/* ٣. گۆڕینی فۆنتی سایتەکە بۆ فۆنتی "Digital/Coding" */
+* {
+    font-family: 'Share Tech Mono', 'Courier New', monospace;
+}
+
+/* ٤. ستایلی دوگمەی "دابەزاندنی شەهادە" بۆ ئەوەی لەگەڵ ستایلەکە بێتەوە */
+.cert-btn-small {
+    background: rgba(255, 149, 0, 0.1) !important;
+    border: 1px solid #ff9500 !important;
+    color: #ff9500 !important;
+    clip-path: polygon(0% 0%, 90% 0%, 100% 100%, 10% 100%) !important; /* شێوەی لاری دوگمەکە */
+    margin-top: 5px;
+    transition: 0.3s;
+}
+
+.cert-btn-small:active {
+    background: #ff9500 !important;
+    color: #000 !important;
+}
+
+/* ١. باکگراوندی تۆڕی سایبەر */
+body {
+    background-color: #050505;
+    background-image: 
+        linear-gradient(rgba(0, 255, 65, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 65, 0.05) 1px, transparent 1px);
+    background-size: 30px 30px; /* قەبارەی چوارگۆشەکان */
+    background-position: center;
+    animation: grid-move 20s linear infinite;
+}
+
+@keyframes grid-move {
+    from { background-position: 0 0; }
+    to { background-position: 0 30px; }
+}
+
+/* ٢. گۆڕینی شێوەی ئەپەکان بۆ "کارتێکی مۆدێرن" */
+.app-row {
+    background: rgba(0, 0, 0, 0.8) !important;
+    border-left: 4px solid var(--main-color) !important; /* هێڵێکی ئەستوور لە لای ڕاست */
+    border-top: 1px solid rgba(0, 255, 65, 0.2) !important;
+    border-bottom: 1px solid rgba(0, 255, 65, 0.2) !important;
+    border-right: 1px solid rgba(0, 255, 65, 0.2) !important;
+    border-radius: 0 15px 15px 0 !important; /* تەنها لایەکی لول بێت */
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: -5px 5px 15px rgba(0, 0, 0, 0.5);
+}
+
+/* ٣. لایتی ڕاکەر (Scanning Effect) */
+.app-row::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 255, 65, 0.1), transparent);
+    animation: scan 4s infinite;
+}
+
+@keyframes scan {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+/* ٤. دوگمەی داگرتنی جیاواز */
+.dl-btn {
+    background: var(--main-color) !important;
+    color: #000 !important;
+    border: none !important;
+    font-weight: 900 !important;
+    text-transform: uppercase;
+    clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%); /* شێوەی دوگمەکە کەمێک لار دەکات */
+    padding: 10px 25px !important;
+}
+
+        :root {
+            --main-color: #00ff41;
+            --dark-bg: #050505;
+            --cert-color: #ff9500;
+            --tg-blue: #0088cc;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--main-color);
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            padding-bottom: 80px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 15px;
+            border-bottom: 1px solid var(--main-color);
+            background: linear-gradient(180deg, #001a00 0%, #050505 100%);
+        }
+
+        .main-logo {
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            border: 1.5px solid var(--main-color);
+            box-shadow: 0 0 10px var(--main-color);
+        }
+
+        .tg-ads {
+            display: inline-block;
+            color: var(--tg-blue);
+            border: 1.5px solid var(--tg-blue);
+            padding: 5px 15px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 11px;
+            margin-top: 10px;
+            animation: pulse-blue 2s infinite;
+        }
+
+        @keyframes pulse-blue {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 136, 204, 0.4); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(0, 136, 204, 0); }
+            100% { transform: scale(1); }
+        }
+
+        .container { padding: 12px; }
+
+        .app-row {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 12px;
+            padding: 12px;
+            border-radius: 12px;
+        }
+
+        .app-icon {
+            width: 55px;
+            height: 55px;
+            border-radius: 12px;
+            border: 1px solid var(--main-color);
+            margin-left: 12px;
+        }
+
+        .app-info { flex-grow: 1; }
+        .app-name { font-size: 15px; color: #fff; margin: 0; }
+
+        .btn-group { display: flex; flex-direction: column; gap: 8px; }
+
+        .dl-btn {
+            background: transparent;
+            color: var(--main-color);
+            border: 1px solid var(--main-color);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 10px;
+            text-decoration: none;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .cert-btn-small {
+            background: transparent;
+            color: var(--cert-color);
+            border: 1px solid var(--cert-color);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 10px;
+            text-decoration: none;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .navbar {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            background: #000;
+            border-top: 1px solid var(--main-color);
+        }
+
+        .nav-link { color: var(--main-color); text-decoration: none; font-size: 12px; cursor: pointer; font-weight: bold; }
+
+        #settingsModal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 85%;
+            max-width: 320px;
+            background: #111;
+            border: 2px solid var(--main-color);
+            padding: 20px;
+            border-radius: 20px;
+            z-index: 200;
+            text-align: center;
+        }
+
+        .color-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 15px 0; }
+        .color-dot { width: 35px; height: 35px; border-radius: 50%; cursor: pointer; border: 2px solid #fff; }
+
+        .close-btn { background: #333; color: #fff; border: none; padding: 8px 20px; border-radius: 8px; margin-top: 15px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div id="access-screen">
+    <div class="login-card" id="l-card">
+        <img src="https://i.ibb.co/xtCq7Tqy/image.png" width="80" style="border-radius: 50%; border: 2px solid var(--main-color);">
+        <h2 style="color: var(--main-color); font-size: 16px; margin-top: 15px;">HARA SYSTEM</h2>
+        <input type="password" id="pass-input" placeholder="کۆدی چوونە ژوورەوە">
+        <button onclick="verifyHARA()">UNLOCK</button>
+        <p id="err-txt">❌ کۆدەکە هەڵەیە!</p>
+    </div>
+</div>
+
+    <div class="header">
+        <img src="https://i.ibb.co/xtCq7Tqy/image.png" class="main-logo">
+        <h1 style="color:#fff; font-size: 18px; margin-bottom: 5px;">HARA STORE</h1>
+        <a href="https://t.me/Hara_IOS" class="tg-ads">📢 JOIN TELEGRAM</a>
+    </div>
+
+    <div class="container">
+        <div class="app-row">
+            <img src="https://i.ibb.co/Qvdr2BNq/image.png" class="app-icon">
+            <div class="app-info">
+                <h3 class="app-name">Video Star VIP</h3>
+            </div>
+            <a href="https://ipalinks.ru/dl/GQ6AazJA
+" class="dl-btn">INSTALL</a>
+        </div>
+
+        <div class="app-row">
+            <img src="https://i.ibb.co/FbwYMr7x/image.png" class="app-icon">
+            <div class="app-info">
+                <h3 class="app-name">ESign</h3>
+            </div>
+            <div class="btn-group">
+                <a href="https://ipalinks.ru/dl/4fKAH
+" class="dl-btn">INSTALL</a>
+                <a href="https://app-storage.loadly.io/3c1b403b2659f46f5db59e43046a49a5.zip?response-content-disposition=attachment%3Bfilename%3DHara_IOS.zip&OSSAccessKeyId=LTAI5tD9VGBdAd8jw9mLHRV8&Expires=1775078039&Signature=AL1VH24Z3dJ%2Fg%2F%2FU527M8Jfsklo%3D" class="cert-btn-small">دابەزاندنی شەهادە</a>
+            </div>
+        </div>
+    </div>
+
+    <nav class="navbar">
+        <div class="nav-link">HOME</div>
+        <div class="nav-link" onclick="toggleSettings()">SETTINGS</div>
+    </nav>
+
+    <div id="settingsModal">
+        <h3 style="color: #fff; margin-bottom: 10px;">Settings</h3>
+        <p style="font-size: 11px;">ڕەنگی سایت هەڵبژێرە:</p>
+        
+        <div class="color-grid">
+            <div class="color-dot" style="background: #00ff41;" onclick="changeColor('#00ff41')"></div>
+            <div class="color-dot" style="background: #ff3131;" onclick="changeColor('#ff3131')"></div>
+            <div class="color-dot" style="background: #3186ff;" onclick="changeColor('#3186ff')"></div>
+            <div class="color-dot" style="background: #d431ff;" onclick="changeColor('#d431ff')"></div>
+            <div class="color-dot" style="background: #ffcc00;" onclick="changeColor('#ffcc00')"></div>
+            <div class="color-dot" style="background: #ff69b4;" onclick="changeColor('#ff69b4')"></div>
+        </div>
+
+        <button class="close-btn" onclick="toggleSettings()">داخستن</button>
+    </div>
+
+    <script>
+        // سکریپتی چوونە ژوورەوە
+        function verifyHARA() {
+            const input = document.getElementById('pass-input').value;
+            const secret = "hara_ios.Bypass"; 
+            const screen = document.getElementById('access-screen');
+            const err = document.getElementById('err-txt');
+            const card = document.getElementById('l-card');
+
+            if (input === secret) {
+                screen.style.transition = "0.8s";
+                screen.style.opacity = "0";
+                setTimeout(() => { screen.style.display = "none"; }, 800);
+            } else {
+                err.style.display = "block";
+                card.style.animation = "shake-box 0.3s";
+                document.getElementById('pass-input').value = "";
+                setTimeout(() => { card.style.animation = ""; }, 300);
+            }
+        }
+
+        function toggleSettings() {
+            const modal = document.getElementById('settingsModal');
+            modal.style.display = (modal.style.display === 'block') ? 'none' : 'block';
+        }
+
+        function changeColor(color) {
+            document.documentElement.style.setProperty('--main-color', color);
+            localStorage.setItem('themeColor', color);
+        }
+
+        window.onload = function() {
+            const savedColor = localStorage.getItem('themeColor');
+            if (savedColor) document.documentElement.style.setProperty('--main-color', savedColor);
+        }
+    </script>
+<style>
+    #welcome-ads {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.95);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        transition: opacity 0.8s ease-out;
+    }
+
+    .ads-content {
+        text-align: center;
+        animation: zoomIn 0.5s ease-out;
+    }
+
+    .ads-content h2 {
+        color: var(--main-color);
+        font-size: 24px;
+        margin-bottom: 10px;
+        text-shadow: 0 0 15px var(--main-color);
+    }
+
+    .ads-content p {
+        color: #fff;
+        font-size: 14px;
+    }
+
+    /* ئەنیمەیشنی هاتنە ناوەوە */
+    @keyframes zoomIn {
+        from { transform: scale(0.5); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+
+    /* شاردنەوەی سکرۆڵ کاتێک ڕیکلامەکە دیارە */
+    .no-scroll { overflow: hidden; }
+</style>
+
+<div id="welcome-ads">
+    <div class="ads-content">
+        <img src="https://i.ibb.co/xtCq7Tqy/image.png" width="100" style="border-radius: 50%; border: 2px solid var(--main-color); margin-bottom: 15px;">
+        <h2>HARA STORE</h2>
+        <p>بەخێربێیت بۆ گەورەترین ستۆری کوردی</p>
+        <div style="margin-top: 20px; color: var(--main-color); font-weight: bold;">Loading...</div>
+    </div>
+</div>
+
+<script>
+    // شاردنەوەی ڕیکلامەکە دوای ٣ چرکە
+    window.addEventListener('load', function() {
+        document.body.classList.add('no-scroll'); // ڕێگری لە سکرۆڵ
+        
+        setTimeout(function() {
+            const ads = document.getElementById('welcome-ads');
+            ads.style.opacity = '0'; // ونبوون بە نەرمی
+            
+            setTimeout(function() {
+                ads.style.display = 'none'; // سڕینەوەی یەکجاری
+                document.body.classList.remove('no-scroll'); // گەڕانەوەی سکرۆڵ
+            }, 800); // کاتی ونبوونەکە
+            
+        }, 3000); // ٣ چرکە دەمێنێتەوە
+    });
+</script>
+<style>
+
+    .server-status-container {
+        text-align: center;
+        padding-top: 15px;
+        background: #000;
+    }
+
+    .status-dot-wrapper {
+        display: inline-flex;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.05);
+        padding: 5px 15px;
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .status-dot-wrapper:active { transform: scale(0.95); }
+
+    .dot {
+        height: 10px;
+        width: 10px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-left: 8px;
+        position: relative;
+    }
+
+    /* گڵۆپە سەوزەکە و ئەنیمەیشنەکەی */
+    .dot-green {
+        background-color: #00ff41;
+        box-shadow: 0 0 10px #00ff41;
+    }
+
+    .dot-green::after {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: inherit;
+        border-radius: 50%;
+        animation: pulse-green 1.5s infinite;
+    }
+
+    @keyframes pulse-green {
+        0% { transform: scale(1); opacity: 0.8; }
+        100% { transform: scale(2.5); opacity: 0; }
+    }
+
+    .status-text {
+        color: #fff;
+        font-size: 11px;
+        font-weight: bold;
+    }
+</style>
+
+<div class="server-status-container">
+    <div class="status-dot-wrapper" onclick="showServerAlert()">
+        <span class="status-text">هەواڵی سێرڤەر</span>
+        <span class="dot dot-green"></span>
+    </div>
+</div>
+
+<script>
+    function showServerAlert() {
+        // لێرە دەتوانیت نامەکە بگۆڕیت بەپێی کات
+        alert("🟢 سێرڤەر هەیە\n🟠 لای هەندێک سێرڤەر هەیە\n🔴 سێرڤەر نییە\n\nئێستا: ✅ سێرڤەر چالاکە و بێ کێشەیە");
+    }
+</script>
+
+</body>
+</html>
